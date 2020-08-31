@@ -2,13 +2,18 @@
 
 var express = require('express');
 
+var helmet = require('helmet');
+
 var server = express();
 
-var welcomeRouter = require("./welcome/welcome-router");
+var ProjectsRouter = require('./projects/projects_router');
 
-var projectsRouter = require("./projects/projects_router");
+var ResourceRouter = require('./resources/resources-router.js');
 
-server.use(express.json());
-server.use('', welcomeRouter);
-server.use('/api/projects', projectsRouter);
+var welcomeRouter = require('./welcome/welcome-router');
+
+server.use(helmet(), express.json());
+server.use('/projects', ProjectsRouter);
+server.use('/resources', ResourceRouter);
+server.use('/', welcomeRouter);
 module.exports = server;

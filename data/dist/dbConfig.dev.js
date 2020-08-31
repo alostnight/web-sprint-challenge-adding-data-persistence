@@ -2,7 +2,7 @@
 
 var knex = require('knex');
 
-var config = require('../knexfile.js');
+var knexfile = require('../knexfile.js');
 
-var database = "development";
-module.exports = knex(config[database]);
+var knexConfig = knexfile.development;
+module.exports = knex(knexConfig);

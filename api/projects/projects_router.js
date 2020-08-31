@@ -1,93 +1,86 @@
 const express = require('express');
+
+const Projects = require('./projects-model');
+
 const router = express.Router();
 
-const db = require("../../data/dbConfig");
+router.get('/', (req, res) => {
+	Projects.find()
+		.then((project) => {
+			res.json(project);
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Error finding projects' });
+		});
+});
 
-router.get('/projects', async (req, res) => {
-	try {
-		const projects  = await db('projects');
-		res.json(projects);
-	} catch (err) {
-		next(err);
-	}
-})
+router.get('/:id', (req, res) => {
+	const { id } = req.params;
 
-router.get('/resources', async (req, res) => {
-	try {
-		const resources  = await db('resources');
-		res.json(resources);
-	} catch (err) {
-		next(err);
-	}
-})
+	Projects.findById(id)
+		.then((project) => {
+			if (project) {
+				res.json(project);
+			} else {
+				res
+					.status(404)
+					.json({ message: 'Project with ID not found' });
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Failed to get Project' });
+		});
+});
 
-router.post('/projects', async (req, res, next) => {
+router.post('/', (req, res) => {
+	const projectData = req.body;
 
-	try {
-		const payload = {
-			name: req.body.name,
-			description: req.body.description,
-			completed: req.body.completed
-		}
+	Projects.add(projectData)
+		.then((project) => {
+			res.status(201).json(project);
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Project failed to create' });
+		});
+});
 
-		const [projectID] = await db('projects').insert(payload);
-		const project = await db.first('*').from('projects').where('id', projectID);
+router.get('/:id/tasks', (req, res) => {
+	const { id } = req.params;
 
-		res.status(201).json(project);
-	} catch (err) {
-		next(err);
-	}
-})
+	Projects.findTask(id)
+		.then((task) => {
+			if (task.length) {
+				res.json(task);
+			} else {
+				res
+					.status(404)
+					.json({ message: 'Task not found' });
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Failed to get tasks' });
+		});
+});
 
-router.post('/resources', async (req, res, next) => {
+router.post('/:id/tasks', (req, res) => {
+	const taskData = req.body;
+	const { id } = req.params;
 
-	try {
-		const payload = {
-			name: req.body.name,
-			description: req.body.description
-		}
-
-		const [resourceID] = await db('resources').insert(payload);
-		const resource = await db('resources').where('id', resourceID).first();
-
-		res.status(201).json(resource);
-	} catch (err) {
-		next(err);
-	}
-})
-
-router.post('/projects/:id/tasks', async (req, res, next) => {
-
-	try {
-		const payload = {
-			project_id: req.params.id,
-			description: req.body.description,
-			notes: req.body.notes,
-			completed: req.body.completed
-		}
-
-		const [id] = await db('tasks').insert({ ...payload })
-		const task = await db('tasks').where({ id }).first();
-
-		res.status(201).json(task);
-	} catch (err) {
-		next(err);
-	}
-})
-
-router.get('/projects/:id/tasks', async (req, res, next) => {
-
-	try {
-		const tasks = await db('tasks').join('projects', 'tasks.project_id', '=', 'projects.id')
-			.select('tasks.id as task_id', 'projects.name as project_name', 'projects.description as project_description',
-				'tasks.description as task_description', 'tasks.notes as task_notes','tasks.completed as task_completed')
-			.where('projects.id', req.params.id);
-
-		res.status(201).json(tasks);
-	} catch (err) {
-		next(err);
-	}
-})
-
+	Projects.findById(id)
+		.then((project) => {
+			if (project) {
+				Projects.addTask(taskData, id).then((task) => {
+					res.status(201).json(taskData);
+				});
+			} else {
+				res
+					.status(404)
+					.json({ message: 'Project not found' });
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'Failed to create new task' });
+		});
+});
 
 module.exports = router;

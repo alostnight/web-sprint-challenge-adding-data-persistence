@@ -6,36 +6,36 @@ exports.seed = function _callee(knex) {
       switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return regeneratorRuntime.awrap(knex('project_resources').insert([{
-            project_id: 1,
-            resource_id: 2
+          return regeneratorRuntime.awrap(knex('projects_resources').insert([{
+            projects_id: 1,
+            resources_id: 2
           }, {
-            project_id: 1,
-            resource_id: 3
+            projects_id: 1,
+            resources_id: 3
           }, {
-            project_id: 2,
-            resource_id: 2
+            projects_id: 2,
+            resources_id: 2
           }, {
-            project_id: 2,
-            resource_id: 3
+            projects_id: 2,
+            resources_id: 3
           }, {
-            project_id: 3,
-            resource_id: 3
+            projects_id: 3,
+            resources_id: 3
           }, {
-            project_id: 3,
-            resource_id: 3
+            projects_id: 3,
+            resources_id: 3
           }, {
-            project_id: 4,
-            resource_id: 2
+            projects_id: 4,
+            resources_id: 2
           }, {
-            project_id: 4,
-            resource_id: 5
+            projects_id: 4,
+            resources_id: 5
           }, {
-            project_id: 5,
-            resource_id: 3
+            projects_id: 5,
+            resources_id: 3
           }, {
-            project_id: 5,
-            resource_id: 4
+            projects_id: 5,
+            resources_id: 4
           }]));
 
         case 2:
